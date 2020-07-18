@@ -69,6 +69,9 @@ inoremap [, [<CR>],<C-c>O
 " autosave wheen focus is lost
 :au FocusLost * :wa
 
+nmap <leader>e :w<CR>:Ex<CR>                                                    
+nmap <leader>a ggVG
+
 " Removes pipes | that act as seperators on splits
 set fillchars+=vert:\
 
