@@ -32,7 +32,15 @@ do
         cp -r ~/.fzf .
         cp -r ~/.config/coc .
         cp -r ~/.vim/plugged .
+        shift
         ;;
+        -u|--unpack)
+        cp .vimrc ~/cvimrc
+        cp -r .fzf ~/
+        cp -r coc ~/.config/
+        cp -r plugged ~/.vim/
+        cd ~/.fzf
+        ./install
         
 #        SHOULD_INITIALIZE=1
 #        shift # Remove --initialize from processing
