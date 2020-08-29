@@ -101,20 +101,23 @@ vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 " find and replace all matching instances of selected text
 vnoremap <C-r> "hy:%s/<C-r>h//g<left><left>
 
-" add plugins
-packadd gruvbox-master
-packadd vim-polyglot-master
-packadd indentLine-master
-packadd fzf.vim-master
-packadd vim-airline-master
-packadd vim-airline-themes-master
-"jpackadd vim-arsync-master
-packadd vim-commentary-master
-packadd vim-easymotion-master
-packadd vim-fugitive-master
-packadd vim-misc-master
-packadd vim-session-master
-packadd vim-surround-master
+call plug#begin('~/.vim/plugged')
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-commentary'
+Plug 'mbbill/undotree'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'sheerun/vim-polyglot'
+Plug 'morhetz/gruvbox'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'Yggdroot/indentLine'
+Plug 'tpope/vim-surround'
+Plug 'xolox/vim-session'
+Plug 'xolox/vim-misc'
+Plug 'easymotion/vim-easymotion'
+call plug#end()
 
 " colors
 colorscheme gruvbox
@@ -202,7 +205,6 @@ let g:indentLine_setColors = 0
 "" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 "" other plugin before putting this into your config.
 let g:coc_disable_startup_warning = 1
-packadd coc.nvim-release
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
