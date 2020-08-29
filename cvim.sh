@@ -27,15 +27,12 @@ do
         cvim +'PlugInstall' +qa
         shift
         ;;
-        -r|--remote-install)
-        ssh $2 "rm -rf ~/cvimrc ~/.vim/plugged ~/.fzf ~/.fzf.bash ~/.confg/coc"
-        scp .vimrc $2:./cvimrc
-        scp -r ~/.vim/plugged $2:./.vim/
-        scp -r ~/.config/coc $2:./.config/
-        scp -r ~/.fzf $2:./
-        ssh $2 "cd ~/.fzf/ && ./install"
-
-        EOF
+        -c|--consolidate)
+        cp ~/cvimrc .vimrc
+        cp -r ~/.fzf .
+        cp -r ~/.config/coc .
+        cp -r ~/.vim/plugged .
+        ;;
         
 #        SHOULD_INITIALIZE=1
 #        shift # Remove --initialize from processing
