@@ -25,11 +25,6 @@ do
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
         install_node
         cvim +'PlugInstall' +qa
-        cvim +'CocInstall coc-json coc-clangd coc-cmake coc-fzf-preview coc-git coc-python coc-sh coc-spell-checker coc-xml coc-yaml coc-sql coc-markdownlint' +qa
-            # copy the vimrc file to the correct location
-            # create the alias and add it to your bashrc
-            # run the plug install command
-            # install coc plugins
 #        SHOULD_INITIALIZE=1
 #        shift # Remove --initialize from processing
 #        ;;

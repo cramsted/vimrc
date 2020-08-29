@@ -204,6 +204,8 @@ let g:indentLine_setColors = 0
 "" " Use tab for trigger completion with characters ahead and navigate.
 "" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 "" other plugin before putting this into your config.
+
+let g:coc_global_extensions = [ 'coc-json', 'coc-clangd', 'coc-cmake', 'coc-fzf-preview', 'coc-git', 'coc-python', 'coc-sh', 'coc-spell-checker', 'coc-xml', 'coc-yaml', 'coc-sql', 'coc-markdownlint' ]
 let g:coc_disable_startup_warning = 1
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
