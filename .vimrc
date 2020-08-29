@@ -1,6 +1,5 @@
-" custom settings
+"jcustom settings
 set pyx=3
-set relativenumber
 set wrap linebreak
 set wildmenu
 set incsearch
@@ -87,7 +86,7 @@ else
 endif
 
 " plugins
-call plug#begin('~/.vim/plugged')
+call plug#begin('~/Documents/vimrc/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-fugitive'
@@ -129,7 +128,7 @@ let g:NERDTreeDirArrowCollapsible = '▼'
 
 " fzf
 nmap <C-p> :GFiles<CR>
-nmap <Leader>b :Buffers<CR>
+nmap <Leader>n :Buffers<CR>
 
 " undotree
 nmap <Leader>u :UndotreeShow<CR>
