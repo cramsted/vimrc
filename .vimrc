@@ -1,10 +1,15 @@
 " custom settings
+set nocompatible " keeps errors from being thrown when -u is used
+set rtp+=~/.fzf
+let mapleader = ' '
 set pyx=3
 set relativenumber
+set number
 set wrap linebreak
 set wildmenu
 set incsearch
 set clipboard=unnamedplus
+set backspace=indent,eol,start
 syntax on
 set guicursor=
 let g:python_highlight_all = 1
@@ -15,14 +20,15 @@ set nobackup
 set noerrorbells
 set expandtab
 set smarttab
-set shiftwidth=4
-set tabstop=4 softtabstop=4
+set shiftwidth=2
+set tabstop=2 softtabstop=2
 set smartindent
 set undodir=~/.vim/undodir
 set termguicolors
 set undofile
 set scrolloff=8
 set splitbelow splitright
+set hlsearch
 set spell
 
 " Displays '-' for trailing space, '>-' for tabs and '_' for non breakable space
@@ -40,18 +46,17 @@ set updatetime=50
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
 
-set colorcolumn=80
-highlight ColorColumn ctermbg=0 guibg=lightgrey
-
 " swaps between buffers
 nnoremap <leader>j <C-W>j
 nnoremap <leader>k <C-W>k
 nnoremap <leader>l <C-W>l
 nnoremap <leader>h <C-W>h
-nnoremap <leader>bn :w <CR>:bnext<CR>
-nnoremap <leader>bv :w <CR>:bprev<CR>
-nnoremap <leader>bd :bdelete<CR>
-nnoremap <leader>ba :bufdo bd<CR>
+nnoremap <leader>nb :w <CR>:bnext<CR>
+nnoremap <leader>vb :w <CR>:bprev<CR>
+nnoremap <leader>b :w <CR>:Buffers<CR> 
+
+nnoremap <leader>db :bdelete 
+nnoremap <leader>dab :bufdo bd<CR>
 
 " Make adjusing split sizes a bit more friendly
 noremap <silent> <C-H> :vertical resize +3<CR>
@@ -59,6 +64,7 @@ noremap <silent> <C-L> :vertical resize -3<CR>
 noremap <silent> <C-K> :resize +3<CR>
 noremap <silent> <C-J> :resize -3<CR>
 noremap <leader>v :vsp<CR>
+noremap <leader>V :sp<CR>
 " auto closing
 inoremap (; (<CR>);<C-c>O
 inoremap (, (<CR>),<C-c>O
@@ -71,12 +77,12 @@ inoremap [, [<CR>],<C-c>O
 
 nmap <leader>e :w<CR>:Ex<CR>                                                    
 nmap <leader>a ggVG
+nmap <leader>gt :!./notes-commit.sh<CR>
 
 " Removes pipes | that act as seperators on splits
 set fillchars+=vert:\
 
 " mapping
-let mapleader = ' '
 map <Leader>w :w<CR>
 if has('nvim')
     map <Leader>r :source ~/.config/nvim/init.vim<CR>
@@ -86,62 +92,59 @@ else
     map <Leader>R :e ~/.vimrc<CR>
 endif
 
-" plugins
-call plug#begin('~/.vim/plugged')
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-commentary'
-Plug 'mbbill/undotree'
-Plug 'junegunn/fzf.vim'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'sheerun/vim-polyglot'
-Plug 'morhetz/gruvbox'
-Plug 'scrooloose/nerdtree'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'     " Highlighting Nerdtree
-Plug 'ryanoasis/vim-devicons'                      " Icons for Nerdtree
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'tpope/vim-surround'
-Plug 'jremmen/vim-ripgrep'
-Plug 'xolox/vim-session'
-Plug 'xolox/vim-misc'
-Plug 'easymotion/vim-easymotion'
-call plug#end()
+" swapping between .h and .cpp files in c/c++
+map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+
+" search visually selected text
+vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
+
+" find and replace all matching instances of selected text
+vnoremap <C-r> "hy:%s/<C-r>h//g<left><left>
+
+" add plugins
+packadd gruvbox-master
+packadd vim-polyglot-master
+packadd indentLine-master
+packadd fzf.vim-master
+packadd vim-airline-master
+packadd vim-airline-themes-master
+"jpackadd vim-arsync-master
+packadd vim-commentary-master
+packadd vim-easymotion-master
+packadd vim-fugitive-master
+packadd vim-misc-master
+packadd vim-session-master
+packadd vim-surround-master
 
 " colors
 colorscheme gruvbox
 set background=dark
-let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_contrast_dark = 'soft'
 if exists('+termguicolors')
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
     let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 let g:gruvbox_invert_selection='0'
-
-" NERDTree
-map <C-\> :NERDTreeToggle<CR>
-let NERDTreeShowLineNumbers=1
-let NERDTreeShowHidden=1
-let NERDTreeMinimalUI = 1
-let g:NERDTreeWinSize=38
-let g:NERDTreeDirArrowExpandable = '►'
-let g:NERDTreeDirArrowCollapsible = '▼'
+" set after the color scheme to stop conflicts
+set cursorline
+hi CursorLine term=bold cterm=bold guibg=Grey30
 
 " fzf
-nmap <C-p> :GFiles<CR>
-nmap <Leader>b :Buffers<CR>
-
-" undotree
-nmap <Leader>u :UndotreeShow<CR>
-
-" vim-sessions
+nmap <C-p> :Files<CR>
+"nmap <Leader>b :Buffers<CR>
+"
+"" undotree
+"nmap <Leader>u :UndotreeShow<CR>
+"
+"" vim-sessions
 let g:session_autosave = 'yes'
 let g:session_autoload = 'no'
 let g:session_autosave_periodic = 1
 let g:session_autosave_silent = 1
 let g:session_command_alias = 1
-
-" --- vim go (polyglot) settings.
+nmap <leader>os :OpenSession 
+"
+"" --- vim go (polyglot) settings.
 let g:go_highlight_build_constraints = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
@@ -156,25 +159,25 @@ let g:go_highlight_generate_tags = 1
 let g:go_highlight_format_strings = 1
 let g:go_highlight_variable_declarations = 1
 let g:go_auto_sameids = 1
-
-" ripgrep
-if executable('rg')
-    let g:rg_derive_root='true'
-endif
-nnoremap <leader>f :Rg 
-nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
-
-" netrw
-let g:netrw_browse_split = 2
+"
+"" ripgrep
+"if executable('rg')
+"    let g:rg_derive_root='true'
+"endif
+"nnoremap <leader>f :Rg 
+"nnoremap <leader>pw :Rg <C-R>=expand("<cword>")<CR><CR>
+"
+"" netrw
+let g:netrw_browse_split = 0
 let g:vrfr_rg = 'true'
 let g:netrw_banner = 0
 let g:netrw_winsize = 25
-
-" vim-airline
-let g:airline#extensions#tabline#enabled = 1 " Automatically displays all buffers when there's only one tab open.
-let g:airline_theme='badwolf'
-
-" vim-fugitive
+"
+"" vim-airline
+let g:airline#extensions#tabline#enabled = 1 " Automatically displays all buffers when there's only one tab open. */
+let g:airline_theme='badwolf' 
+"
+"" vim-fugitive
 nmap <leader>gh :diffget //3<CR>
 nmap <leader>gf :diffget //2<CR>
 nmap <leader>gs :G<CR>
@@ -186,15 +189,20 @@ let g:EasyMotion_do_mapping = 0 " Disable default mappings
 
 " Jump to anywhere you want with minimal keystrokes, with just one key binding.
 " `s{char}{label}`
-nmap <Leader>s <Plug>(easymotion-overwin-f)
+nmap <Leader>f <Plug>(easymotion-overwin-f)
 
 " Turn on case-insensitive feature
 let g:EasyMotion_smartcase = 1
 
-""""""""""""""" coc.vim """""""""""""""""""" 
-" " Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
+" indentLine
+let g:indentLine_setColors = 0
+
+"""""""""""""""" coc.vim """""""""""""""""""" 
+"" " Use tab for trigger completion with characters ahead and navigate.
+"" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+"" other plugin before putting this into your config.
+let g:coc_disable_startup_warning = 1
+packadd coc.nvim-release
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
