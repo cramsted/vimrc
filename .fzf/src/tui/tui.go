@@ -40,6 +40,12 @@ const (
 	ESC
 	CtrlSpace
 
+	// https://apple.stackexchange.com/questions/24261/how-do-i-send-c-that-is-control-slash-to-the-terminal
+	CtrlBackSlash
+	CtrlRightBracket
+	CtrlCaret
+	CtrlSlash
+
 	Invalid
 	Resize
 	Mouse
@@ -60,6 +66,7 @@ const (
 	Right
 	Home
 	End
+	Insert
 
 	SUp
 	SDown
@@ -80,6 +87,7 @@ const (
 	F12
 
 	Change
+	BackwardEOF
 
 	AltSpace
 	AltSlash
@@ -167,6 +175,8 @@ func (p ColorPair) Bg() Color {
 type ColorTheme struct {
 	Fg           Color
 	Bg           Color
+	PreviewFg    Color
+	PreviewBg    Color
 	DarkBg       Color
 	Gutter       Color
 	Prompt       Color
@@ -201,7 +211,8 @@ type BorderShape int
 
 const (
 	BorderNone BorderShape = iota
-	BorderAround
+	BorderRounded
+	BorderSharp
 	BorderHorizontal
 )
 
@@ -215,8 +226,21 @@ type BorderStyle struct {
 	bottomRight rune
 }
 
+type BorderCharacter int
+
 func MakeBorderStyle(shape BorderShape, unicode bool) BorderStyle {
 	if unicode {
+		if shape == BorderRounded {
+			return BorderStyle{
+				shape:       shape,
+				horizontal:  '─',
+				vertical:    '│',
+				topLeft:     '╭',
+				topRight:    '╮',
+				bottomLeft:  '╰',
+				bottomRight: '╯',
+			}
+		}
 		return BorderStyle{
 			shape:       shape,
 			horizontal:  '─',
@@ -238,10 +262,21 @@ func MakeBorderStyle(shape BorderShape, unicode bool) BorderStyle {
 	}
 }
 
+func MakeTransparentBorder() BorderStyle {
+	return BorderStyle{
+		shape:       BorderRounded,
+		horizontal:  ' ',
+		vertical:    ' ',
+		topLeft:     ' ',
+		topRight:    ' ',
+		bottomLeft:  ' ',
+		bottomRight: ' '}
+}
+
 type Renderer interface {
 	Init()
 	Pause(clear bool)
-	Resume(clear bool)
+	Resume(clear bool, sigcont bool)
 	Clear()
 	RefreshWindows(windows []Window)
 	Refresh()
@@ -253,7 +288,7 @@ type Renderer interface {
 	MaxY() int
 	DoesAutoWrap() bool
 
-	NewWindow(top int, left int, width int, height int, borderStyle BorderStyle) Window
+	NewWindow(top int, left int, width int, height int, preview bool, borderStyle BorderStyle) Window
 }
 
 type Window interface {
@@ -315,12 +350,16 @@ var (
 	ColInfo            ColorPair
 	ColHeader          ColorPair
 	ColBorder          ColorPair
+	ColPreview         ColorPair
+	ColPreviewBorder   ColorPair
 )
 
 func EmptyTheme() *ColorTheme {
 	return &ColorTheme{
 		Fg:           colUndefined,
 		Bg:           colUndefined,
+		PreviewFg:    colUndefined,
+		PreviewBg:    colUndefined,
 		DarkBg:       colUndefined,
 		Gutter:       colUndefined,
 		Prompt:       colUndefined,
@@ -344,8 +383,10 @@ func init() {
 	Default16 = &ColorTheme{
 		Fg:           colDefault,
 		Bg:           colDefault,
+		PreviewFg:    colUndefined,
+		PreviewBg:    colUndefined,
 		DarkBg:       colBlack,
-		Gutter:       colBlack,
+		Gutter:       colUndefined,
 		Prompt:       colBlue,
 		Match:        colGreen,
 		Current:      colYellow,
@@ -359,6 +400,8 @@ func init() {
 	Dark256 = &ColorTheme{
 		Fg:           colDefault,
 		Bg:           colDefault,
+		PreviewFg:    colUndefined,
+		PreviewBg:    colUndefined,
 		DarkBg:       236,
 		Gutter:       colUndefined,
 		Prompt:       110,
@@ -374,6 +417,8 @@ func init() {
 	Light256 = &ColorTheme{
 		Fg:           colDefault,
 		Bg:           colDefault,
+		PreviewFg:    colUndefined,
+		PreviewBg:    colUndefined,
 		DarkBg:       251,
 		Gutter:       colUndefined,
 		Prompt:       25,
@@ -406,6 +451,8 @@ func initTheme(theme *ColorTheme, baseTheme *ColorTheme, forceBlack bool) {
 	}
 	theme.Fg = o(baseTheme.Fg, theme.Fg)
 	theme.Bg = o(baseTheme.Bg, theme.Bg)
+	theme.PreviewFg = o(theme.Fg, o(baseTheme.PreviewFg, theme.PreviewFg))
+	theme.PreviewBg = o(theme.Bg, o(baseTheme.PreviewBg, theme.PreviewBg))
 	theme.DarkBg = o(baseTheme.DarkBg, theme.DarkBg)
 	theme.Gutter = o(theme.DarkBg, o(baseTheme.Gutter, theme.Gutter))
 	theme.Prompt = o(baseTheme.Prompt, theme.Prompt)
@@ -442,6 +489,8 @@ func initPalette(theme *ColorTheme) {
 		ColInfo = pair(theme.Info, theme.Bg)
 		ColHeader = pair(theme.Header, theme.Bg)
 		ColBorder = pair(theme.Border, theme.Bg)
+		ColPreview = pair(theme.PreviewFg, theme.PreviewBg)
+		ColPreviewBorder = pair(theme.Border, theme.PreviewBg)
 	} else {
 		ColPrompt = pair(colDefault, colDefault)
 		ColNormal = pair(colDefault, colDefault)
@@ -456,6 +505,8 @@ func initPalette(theme *ColorTheme) {
 		ColInfo = pair(colDefault, colDefault)
 		ColHeader = pair(colDefault, colDefault)
 		ColBorder = pair(colDefault, colDefault)
+		ColPreview = pair(colDefault, colDefault)
+		ColPreviewBorder = pair(colDefault, colDefault)
 	}
 }
 
