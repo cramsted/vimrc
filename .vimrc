@@ -15,6 +15,7 @@ set guicursor=
 let g:python_highlight_all = 1
 set laststatus=2
 set noshowmode
+set mouse=a
 set noswapfile
 set nobackup
 set noerrorbells
@@ -102,6 +103,7 @@ vnoremap // y/\V<C-R>=escape(@",'/\')<CR><CR>
 vnoremap <C-r> "hy:%s/<C-r>h//g<left><left>
 
 call plug#begin('~/.vim/plugged')
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'tpope/vim-fugitive'
@@ -110,7 +112,6 @@ Plug 'mbbill/undotree'
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'sheerun/vim-polyglot'
-Plug 'morhetz/gruvbox'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-surround'
